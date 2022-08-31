@@ -1,9 +1,122 @@
+function checkBombs(x, y) {
+    let counter = 0;
+
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            try {
+
+                document.querySelector(
+                    '[data-row*="' + (x + i).toString() + '"]' + '[data-col*="' + (y + j).toString() + '"]'
+                ).classList.contains('mine')
+                && counter++;
+
+            }catch (error){}
+        }
+    }
+    return counter;
+}
+
+
+function emptyArea(x, y, doNotUseArr) {
+    doNotUseArr.push([x,y]);
+
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+
+            if (doNotUseArr[doNotUseArr.length - 1][0] !== x + i
+                || doNotUseArr[doNotUseArr.length - 1][1] !== y + j){
+
+                try {
+                    if (!document.querySelector(
+                        '[data-row*="' + (x + i).toString() + '"][data-col*="' + (y + j).toString() + '"]'
+                        ).classList.contains('mine')
+
+                        && !document.querySelector(
+                            '[data-row*="' + (x + i).toString() + '"][data-col*="' + (y + j).toString() + '"]'
+                        ).classList.contains('open')
+                    ) {
+
+                        let bombs = checkBombs((x + i), (y + j));
+
+                        document.querySelector(
+                            '[data-row*="' + (x + i).toString() + '"][data-col*="' + (y + j).toString() + '"]'
+                        ).classList.add('open');
+
+                        bombs !== 0 ?
+                            document.querySelector(
+                                '[data-row*="' + (x + i).toString() + '"][data-col*="' + (y + j).toString() + '"]'
+                            ).innerHTML += bombs
+                            : emptyArea((x + i), (y + j), doNotUseArr);
+
+                    }
+                } catch (error) {}
+            }
+        }
+    }
+}
+
+
+function flagsLeft() {
+    let counter = 0;
+
+    for (let flag of document.querySelectorAll('.field')) {
+
+        flag.classList.contains('mine')
+        && counter++;
+
+        flag.classList.contains('flagged')
+        && counter--;
+
+    }
+    return counter;
+}
+
+
+function checkWin() {
+    let hitCounter = 0;
+    let bombCounter = 0;
+
+    for (let opened of document.querySelectorAll('.field')) {
+
+        opened.classList.contains('open')
+        && hitCounter++;
+
+        opened.classList.contains('mine')
+        && bombCounter++;
+
+    }
+    return document.querySelectorAll('.field').length
+        === hitCounter + bombCounter;
+}
+
+
+function countUp(){
+    let counter = 0;
+
+    let interval = setInterval(function () {
+        counter++;
+
+        document.getElementById("elapsed-time-counter").value
+            = Math.floor(counter / 250).toString();
+
+        if (document.querySelector('.game-field')
+                .getAttribute('class')
+            === 'game-field end'
+        ) {
+            clearInterval(interval);
+        }
+    });
+}
+
+
 const game = {
     init: function () {
         this.drawBoard();
-
+        document.querySelector('#flags-left-counter')
+            .setAttribute('value', flagsLeft().toString());
         // TODO: do the rest of the game setup here (eg. add event listeners)
         this.initRightClick();
+        this.initLeftClick();
     },
 
     drawBoard: function () {
@@ -49,7 +162,7 @@ const game = {
             'beforeend',
             `<div class="field${isMine ? ' mine' : ''}"
                         data-row="${row}"
-                        data-col="${col}"></div>`);
+                        data-col="${col}">&nbsp;</div>`);
     },
     // reference solution for "Create mine flagging feature" user story
     initRightClick() {
@@ -60,8 +173,8 @@ const game = {
         // for all fields...
         for (let field of fields) {
             // we add the same event listener for the right click (so called contextmenu) event
-            field.addEventListener('contextmenu', function (event) {
-                // so if you right click on any field...
+            field.addEventListener('contextmenu', async function (event) {
+                // so if you right-click on any field...
 
                 // context menu remains hidden
                 event.preventDefault();
@@ -69,9 +182,67 @@ const game = {
                 // and "flagged" class toggles on the clicked element
                 // (styles of "flagged" class are defined in style.css)
                 event.currentTarget.classList.toggle('flagged');
+
+                document.querySelector('#flags-left-counter')
+                    .setAttribute('value', flagsLeft().toString());
+
+                document.getElementById("elapsed-time-counter").value === ''
+                && countUp('start');
             });
         }
     },
+    initLeftClick() {
+        for (
+            let field of document.querySelectorAll('.field'
+        )) {
+
+            field.addEventListener(
+                'click', function (event) {
+
+                    if (field.className === 'field') {
+                        event.currentTarget.classList.add('open');
+
+                        let bombs = checkBombs(
+                            parseInt(field.getAttribute('data-row')),
+                            parseInt(field.getAttribute('data-col'))
+                        );
+
+                        if (bombs === 0) {
+                            field.innerHTML = ""
+
+                            emptyArea(
+                                parseInt(field.getAttribute('data-row')),
+                                parseInt(field.getAttribute('data-col')),
+                                []
+                            );
+
+                        }else {
+                            field.innerHTML += bombs.toString()
+                        }
+
+                    } else if (field.className === 'field mine') {
+
+                        for (
+                            let mine of document.getElementsByClassName('field mine')
+                            ) {
+                            mine.classList.add('bomb');
+                        }
+
+                        alert('LOSE :((');
+                        document.querySelector('.game-field')
+                            .classList.add('end');
+                    }
+
+                    checkWin() &&(alert('!!!WIN!!!'),
+                        document.querySelector('.game-field')
+                            .classList.add('end'));
+
+                    document.getElementById("elapsed-time-counter").value === ''
+                    && countUp('start');
+            });
+        }
+    },
+
 };
 
-game.init();
+game.init()

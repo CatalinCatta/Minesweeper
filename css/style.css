@@ -21,7 +21,8 @@
     display: flex;
 }
 
-.game-field .row .field {
+.game-field .row .field{
+    user-select: none;
     height: 16px;
     width: 16px;
     background: url('../img/closed-field.png');
@@ -33,4 +34,16 @@
 /* Reference solution for "Create mine flagging feature" user story */
 .game-field .row .field.flagged {
     background: url('../img/flag.png');
+}
+
+.game-field .row .field.open {
+    background: url('../img/open-field.png');
+}
+
+.game-field .row .field.bomb {
+    background: url("../img/mine.png");
+}
+
+.end {
+    pointer-events: none;
 }
