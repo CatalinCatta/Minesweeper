@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Minesweeper</title>
     <!-- http://proger.i-forge.net/The_smallest_transparent_pixel/ -->
-    <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=">
+    <link rel="icon" href="img/icon.png">
     <link rel="stylesheet" href="css/style.css">
     <script src="js/game.js" defer></script>
 </head>
 <body>
 
 <div class="stats">
+    <form action="index.html" method="GET">
+        <button type="submit" value="Start" class="home">&nbsp;</button>
+    </form>
     <input type="text" id="flags-left-counter" disabled value="0" data-all-flags-count="0">
+    <form action="game.html" method="GET">
+        <button type="submit" value="Start" class="icon">&nbsp;</button>
+    </form>
     <input type="text" id="elapsed-time-counter" disabled value="">
+    <button type="button" id="changeFlagType" class="flag-disabled">&nbsp;</button>
 </div>
-<div class="game-field" data-cell-width="16" data-cell-height="16">
-
-</div>
+<div class="game-field" data-cell-width="16" data-cell-height="16"></div>
 </body>
 </html>

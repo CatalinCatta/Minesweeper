@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Minesweeper</title>
     <!-- http://proger.i-forge.net/The_smallest_transparent_pixel/ -->
-    <link rel="icon" href="data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=">
+    <link rel="icon" href="img/icon.png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<form action="game.html" method="GET">
+<form action="game.html" class="starting-scene" method="GET">
     <div>
         <label for="cols">Cols:</label><br>
         <input type="number" id="cols" name="cols" value="10">
@@ -26,4 +26,10 @@
     <input type="submit" value="Start"/>
 </form>
 </body>
+
+<script>
+    document.getElementById('rows').value = localStorage.getItem('rows') || 10;
+    document.getElementById('cols').value = localStorage.getItem('cols') || 10;
+    document.getElementById('mines').value = localStorage.getItem('mines') || 10;
+</script>
 </html>
