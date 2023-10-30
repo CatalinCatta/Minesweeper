@@ -26,6 +26,8 @@ This Minesweeper game is a web-based implementation created using HTML, JavaScri
 - Click on the cells to reveal the hidden squares, but be cautious of the mines!
 - Use the provided clues to deduce the mine locations and clear the entire grid to win.
 
+### Media
+You cand find the game published [here](https://thenia13.itch.io/minesweeper)
 
 <p align="center">
   <img src="image.jpg">
