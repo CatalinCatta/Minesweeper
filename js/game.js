@@ -25,7 +25,6 @@ function emptyArea(x, y, doNotUseArr) {
 
                 try {
                     let element = document.querySelector(`[data-row*="${x + i}"][data-col*="${y + j}"]`);
-                    console.log(element)
                     if (!element.classList.contains('mine') && !element.classList.contains('open') && !element.classList.contains("flagged")) {
                         let bombs = checkBombs((x + i), (y + j));
 
@@ -188,7 +187,7 @@ function beehive(field, e) {
 
 function flagHandle(field, event) {
     if (field.className.includes('open')) return;
-    if (flagsLeft() <= 0) return;
+    if (!event.currentTarget.classList.contains('flagged') && flagsLeft() <= 0) return;
 
     event.preventDefault();
     event.currentTarget.classList.toggle('flagged');
