@@ -123,6 +123,11 @@ function switchFlagType() {
 
 
 const game = {
+    firstClick: true,
+    mineCount: 0,
+    rows: 0,
+    cols: 0,
+
     init: function () {
         localStorage.removeItem("flag");
         this.drawBoard();
@@ -165,8 +170,10 @@ const game = {
         localStorage.setItem('rows', rows)
         localStorage.setItem('cols', cols)
         localStorage.setItem('mines', mineCount)
-
-        const minePlaces = this.getRandomMineIndexes(mineCount, cols, rows);
+            
+        this.mineCount = mineCount;
+        this.rows = rows;
+        this.cols = cols;
 
         let gameField = document.querySelector(".game-field");
         this.setGameFieldSize(gameField, rows, cols);
@@ -174,7 +181,7 @@ const game = {
         for (let row = 0; row < rows; row++) {
             const rowElement = this.addRow(gameField);
             for (let col = 0; col < cols; col++) {
-                this.addCell(rowElement, row, col, minePlaces.has(cellIndex));
+                this.addCell(rowElement, row, col, false);
                 cellIndex++;
             }
         }
@@ -210,6 +217,60 @@ const game = {
                 beehive(field, e);
             });
         }
+    }, generateMines: function (safeRow, safeCol) {
+
+        const safeCells = new Set();
+
+        const canProtect3x3 =
+            this.mineCount <= (this.rows * this.cols - 9);
+
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+
+                if (!canProtect3x3 && (i !== 0 || j !== 0))
+                    continue;
+
+                const row = safeRow + i;
+                const col = safeCol + j;
+
+                if (
+                    row >= 0 &&
+                    row < this.rows &&
+                    col >= 0 &&
+                    col < this.cols
+                ) {
+                    safeCells.add(`${row},${col}`);
+                }
+            }
+        }
+
+        const mines = new Set();
+
+        while (mines.size < this.mineCount) {
+
+            const index =
+                Math.floor(Math.random() * this.rows * this.cols);
+
+            const row = Math.floor(index / this.cols);
+            const col = index % this.cols;
+
+            if (safeCells.has(`${row},${col}`))
+                continue;
+
+            mines.add(index);
+        }
+
+        mines.forEach(index => {
+
+            const row = Math.floor(index / this.cols);
+            const col = index % this.cols;
+
+            document
+                .querySelector(
+                    `[data-row="${row}"][data-col="${col}"]`
+                )
+                .classList.add('mine');
+        });
     },
 };
 
@@ -235,6 +296,15 @@ function flagHandle(field, event) {
 }
 
 function areaHandle(field, event) {
+    if (game.firstClick) {
+        game.firstClick = false;
+
+        game.generateMines(
+            parseInt(field.dataset.row),
+            parseInt(field.dataset.col)
+        );
+    }
+
     if (field.className === 'field') {
         event.currentTarget.classList.add('open');
 
