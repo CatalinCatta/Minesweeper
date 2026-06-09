@@ -1,3 +1,26 @@
+const difficulties = {
+    easy: {
+        rows: 9,
+        cols: 9,
+        mines: 10
+    },
+    medium: {
+        rows: 16,
+        cols: 16,
+        mines: 40
+    },
+    hard: {
+        rows: 16,
+        cols: 30,
+        mines: 99
+    },
+    impossible: {
+        rows: 24,
+        cols: 30,
+        mines: 180
+    }
+};
+
 function checkBombs(x, y) {
     let counter = 0;
 
@@ -114,17 +137,30 @@ const game = {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
-        if (localStorage.getItem('rows') == null) localStorage.setItem('rows', '10');
-        if (localStorage.getItem('cols') == null) localStorage.setItem('cols', '10');
+        if (localStorage.getItem('difficulty') == null) localStorage.setItem('difficulty', 'easy');
+        if (localStorage.getItem('rows') == null) localStorage.setItem('rows', '9');
+        if (localStorage.getItem('cols') == null) localStorage.setItem('cols', '9');
         if (localStorage.getItem('mines') == null) localStorage.setItem('mines', '10');
 
-        let tempRow = urlParams.get('rows');
-        let tempCols = urlParams.get('cols');
-        let tempMineCount = urlParams.get('mines');
+        let dificulty = urlParams.get('difficulty');
+        let rows = localStorage.getItem('rows');
+        let cols = localStorage.getItem('cols');
+        let mineCount = localStorage.getItem('mines');
 
-        let rows = tempRow != null ? parseInt(tempRow) : localStorage.getItem('rows');
-        let cols = tempCols != null ? parseInt(tempCols) : localStorage.getItem('cols');
-        let mineCount = tempMineCount != null ? parseInt(tempMineCount) : localStorage.getItem('mines');
+        if (difficulties[dificulty]) {
+            rows = difficulties[dificulty].rows;
+            cols = difficulties[dificulty].cols;
+            mineCount = difficulties[dificulty].mines;
+            localStorage.setItem('difficulty', dificulty);
+        } else {
+            let tempRow = urlParams.get('rows');
+            let tempCols = urlParams.get('cols');
+            let tempMineCount = urlParams.get('mines');
+
+            if (tempRow != null) rows = parseInt(tempRow);
+            if (tempCols != null) cols = parseInt(tempCols);
+            if (tempMineCount != null) mineCount = parseInt(tempMineCount);
+        }
 
         localStorage.setItem('rows', rows)
         localStorage.setItem('cols', cols)
