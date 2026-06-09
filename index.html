@@ -62,10 +62,15 @@
         minesInput.value = localStorage.getItem('mines') || 10;
 
         function updateCustomVisibility() {
+
+            const isCustom = difficulty.value === 'custom';
+
             customSettings.style.display =
-                difficulty.value === 'custom'
-                    ? 'block'
-                    : 'none';
+                isCustom ? 'block' : 'none';
+
+            rowsInput.disabled = !isCustom;
+            colsInput.disabled = !isCustom;
+            minesInput.disabled = !isCustom;
         }
 
         function updateMineLimit() {

@@ -130,9 +130,9 @@ const game = {
 
     init: function () {
         localStorage.removeItem("flag");
-        this.drawBoard();
+        this.drawBoard();                                   
         document.querySelector('#flags-left-counter')
-            .setAttribute('value', flagsLeft().toString());
+            .setAttribute('value', this.mineCount.toString());
         this.initRightClick();
         this.initLeftClick();
         document.getElementById('changeFlagType').addEventListener('click', switchFlagType);
@@ -174,6 +174,9 @@ const game = {
         this.mineCount = mineCount;
         this.rows = rows;
         this.cols = cols;
+
+        document.querySelector('#flags-left-counter')
+            .setAttribute('value', flagsLeft().toString());
 
         let gameField = document.querySelector(".game-field");
         this.setGameFieldSize(gameField, rows, cols);
